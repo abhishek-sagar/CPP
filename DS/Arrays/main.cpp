@@ -131,18 +131,19 @@ using namespace std;
 
 //************ pair sum equal to x; **********//
 
-// void PairSumX(int a[],int n,int sum){
-// 	map<int,int> M;
-// 	for(int i=0;i<n;i++){
-//         int temp = sum-a[i];
-//         map<int, int>::iterator itr = M.find(temp);
-//         if(itr != M.end() && itr->second == 1){
-//               cout<<"("<<temp<<","<<a[i]<<")"<<",";
-//         }
-//         M.insert(pair<int,int>(a[i],1));
-// 	}
-// 	return;
-// }
+void PairSumX(int a[],int n,int sum){
+	map<int,int> M;
+	for(int i=0;i<n;i++){
+        int temp = sum-a[i];
+        map<int, int>::iterator itr = M.find(temp);
+        if(itr != M.end() && itr->second == 1){
+              cout<<"("<<temp<<","<<a[i]<<")"<<",";
+        }
+        M.insert(pair<int,int>(a[i],1));
+	}
+	return;
+}
+
  
 //********Number accuring odd no. of times********//
 
@@ -235,6 +236,7 @@ void mergesort(int a[],int s,int e){
 // 	}
 // }
 
+
 // void Triplet(int a[],int n,int x){
 //     mergesort(a,0,n-1);
 //     int l=0,r = n-1;
@@ -305,7 +307,7 @@ void print_subs(string input,string output){
 }
 
 int main(){
-   string s = "abcdejlsdfvidfvgsd";
-   print_subs(s," ");
+   int a[8] = {3,5,-1,1,2,4,7,0};
+   PairSumX(a,8,4);
    return 0;
 }

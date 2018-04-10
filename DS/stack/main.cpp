@@ -1,4 +1,5 @@
-#include<iostream>
+#include <iostream>
+#include <stack>
 #include "Node.h"
 using namespace std;
 
@@ -40,7 +41,7 @@ class Stack{
    	 	else return -1;
    	 }
 
-   	 bool isempty(){
+   	 bool empty(){
    	 	if(top==NULL){
    	 		return true;
    	 	}
@@ -61,7 +62,7 @@ class Stack{
    	    return;
    	 }
 
-   	 int StackSize(){
+   	 int size(){
    	 	int out=0;
    	 	if(top == NULL){
    	 		return 0;
@@ -76,6 +77,7 @@ class Stack{
 };
 
 int main(){
+ //     stack<int> s;      Use STL like this.For more info go to cplusplus.com
       Stack s;
       s.push(2);
       s.push(3);
@@ -83,11 +85,12 @@ int main(){
       s.push(4);
       s.push(25);
       s.push(6);
-      int n = s.StackSize();
+      int n = s.size();
       for(int i=0;i<n;i++){
-      	cout<<s.pop()<<endl;
+      	cout<<s.Top()<<endl;
+         s.pop();
       }
-      if(s.isempty()){
+      if(s.empty()){
       	cout<<"yes"<<endl;
       }
       else{
