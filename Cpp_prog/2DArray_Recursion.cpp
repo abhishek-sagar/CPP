@@ -205,7 +205,7 @@ int keypad(int a[],int si,int l,map<int,string> M, char out[][5]){
 
 /* 7. stairs and n step problem , Using DP*/  
 
-int N_step(int stairs,int a[]){
+long long int N_step(long long int stairs,long long int a[]){
    if(stairs == 1 || stairs == 0){
    	return 1;
    }else if(stairs == 2){
@@ -214,11 +214,12 @@ int N_step(int stairs,int a[]){
    	return a[stairs];
    }
    else{
-   	    int result = N_step(stairs-3,a)+N_step(stairs-2,a)+N_step(stairs-1,a);
+   	    long long int result = N_step(stairs-3,a)+N_step(stairs-2,a)+N_step(stairs-1,a);
    	    a[stairs] = result;
    	    return result;
    }
 }
+
 
 int main(){
   // char s[10][3];
@@ -246,7 +247,7 @@ int main(){
   // string s;
   // cin>>s;
   // char out[100][6];
-  // int row = subs(s,out);   sending an input array with an empty output array 
+  // int row = subs(s,out);   //sending an input array with an empty output array 
   // for(int i=0;i<row;i++){
   // 	for(int j=0;out[i][j]!='\0';j++){
   // 		cout<<out[i][j];
@@ -269,7 +270,7 @@ int main(){
 
   // int a[10] = {2,3,4};
   // char out[200][5];
-  // int row = phone(a,0,3,M,out);
+  // int row = keypad(a,0,3,M,out);
   // for(int i=0;i<row;i++){
   // 	for(int j=0;out[i][j]!='\0';j++){
   // 		cout<<out[i][j];
@@ -279,10 +280,10 @@ int main(){
 
 
 
-  int stairs;
+  long long int stairs;
   cin>>stairs;
-  int a[stairs+1] = {0};
-  int step = N_step(stairs,a);
+  long long int a[stairs+1] = {0};
+  long long int step = N_step(stairs,a);
   cout<<"total ways : "<<step<<endl;
   return 0;
 }
