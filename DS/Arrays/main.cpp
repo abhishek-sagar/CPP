@@ -220,54 +220,66 @@ void mergesort(int a[],int s,int e){
  return;
 }
 
-// int find(int a[],int l,int r,int x){
-// 	if(l>r){
-// 		return -999999;
-// 	}
-// 	int mid = l+(r-l)/2;
-// 	if(a[mid] == x){
-// 		return (a[mid]);
-// 	}
-// 	else if(a[mid]>x){
-// 		find(a,l,mid-1,x);
-// 	}
-// 	else{
-// 		find(a,mid+1,r,x);
-// 	}
-// }
+//*** TripletSum ***// minimum complexity O(n^2);
+/// all three approaches 
+
+// Direct approach
+
+void TripletDirect(int a[],int n,int x){  // Complexity O(n^3);
+    for(int i=0;i<n;i++){
+    	for(int j=i+1;j<n;j++){
+    	    for(int k=j+1;k<n;k++){
+    	    	if(a[i]+a[j]+a[k] == x){
+    	    		cout<<"("<<a[k]<<","<<a[i]<<","<<a[j]<<")"<<",";
+    	    	}
+    	    }
+    	}
+    }
+    cout<<endl;
+    return;
+}
+
+void TripletHash(int a[],int n,int x){
+    for(int i=0;i<n;i++){
+		map<int, int> M;
+	    map<int, int>::iterator itr;
+		for(int j=i+1;j<n;j++){
+			int sum  =  x-(a[i]+a[j]);
+			itr = M.find(sum);
+			if(itr != M.end()){
+				cout<<"("<<sum<<","<<a[i]<<","<<a[j]<<")"<<",";
+			}else{
+				M.insert(pair<int,int>(a[j],j));
+			}
+		}
+	}
+	cout<<endl;
+	return;
+}
+
+void TripletSort(int a[],int n,int x){
+    mergesort(a,0,n-1);
+    int i=0;
+    for(i=0;i<n;i++){
+    	int l=i+1;
+    	int r = n-1;
+    	while(l<r){
+    		if(a[i]+a[l]+a[r] == x){
+    			cout<<"("<<a[i]<<","<<a[l]<<","<<a[r]<<")"<<",";
+    			l++;
+    			r--;
+    		}else if(a[i]+a[l]+a[r] < x){
+    			l++;
+    		}else{
+    			r--;
+    		}
+    	}
+    }
+    cout<<endl;
+    return;
+}
 
 
-// void Triplet(int a[],int n,int x){
-//     mergesort(a,0,n-1);
-//     int l=0,r = n-1;
-//     while(l<r){
-//        if((a[l]+a[r]) > x){
-       	   
-//        	   int third = find(a,l+1,r-1,(x-(a[l]+a[r])));
-//        	   if(third != -999999){
-//        	   	 cout<<"("<<a[l]<<","<<third<<","<<a[r]<<")"<<",";
-//        	   }
-//        	   r--;
-//        }       
-//        else if(a[l]+a[r] < x){
-           
-//        	   int third = find(a,l+1,r-1,(x-(a[l]+a[r])));
-//        	   if(third != -999999){
-//        	   	 cout<<"("<<a[l]<<","<<third<<","<<a[r]<<")"<<",";
-//        	   }
-//        	   l++;
-//        } 
-//        else{
-//           int third = find(a,l+1,r-1,0);
-//        	   if(third == 0){
-//        	   	 cout<<"("<<a[l]<<","<<third<<","<<a[r]<<")"<<",";
-//        	   }
-//        	   l++;
-//        	   r--;
-//        }
-//     }
-//     return;
-// }
 
 
 //***** sum of all substrings of a string representing a no. in O(n) *******//
