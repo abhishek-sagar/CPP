@@ -1,17 +1,19 @@
 #ifndef NODE_H
 #define NODE_H
-template <typename T>
+
 class Node{
 public:
-	T data;
+	int data;
 	Node* next;
-	Node(T data){
-       this->data = data;
-       this->next = NULL;
+	
+	Node(int data){
+        this->data = data;
+        this->next = NULL;
 	}
+
 	~Node(){
 		if(this->next!=NULL){
-			delete next;
+		  delete next;
 		}
 	}
 };

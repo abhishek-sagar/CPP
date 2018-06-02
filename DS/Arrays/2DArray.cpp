@@ -1,5 +1,6 @@
 #include<iostream>
 #include<string>
+#include<map>
 using namespace std;
 
 //** Wave Print **//(in this we print like 123654789)
@@ -123,6 +124,54 @@ long long int n_step(long long int stairs,long long int a[]){
 	}
 }
 
+
+//** Keypad **//
+
+int Keypad(int a[],char out[][6],int si,int e,map<int,string> M){
+	if(si == e){
+        map<int,string>::iterator itr;
+        itr = M.find(a[si]);
+        string s = itr->second;
+        int i=0;
+        while(i<s.length()){
+        	out[i][0] = s[i];
+        	out[i][1] = '\0';
+        	i++;
+        }
+        return i;
+	}else{
+		int row = Keypad(a,out,si+1,e,M);
+		int i=0,n=0;
+		map<int,string>::iterator itr;
+        itr = M.find(a[si]);
+		string x = itr->second;
+		for(i;x[i+1]!='\0';i++){
+		    for(int q=0;q<row;q++,n++){
+			    out[row+n][0] = x[i];
+			    int j=0;
+			    for(j;out[q][j]!='\0';j++){
+				  out[row+n][j+1] = out[q][j];
+			    }
+		    	out[row+n][j+1] = '\0';
+		    }
+	    }
+		for(int k=row-1;k>=0;k--){
+			int l = 0,j=0;
+			while(out[k][j]!='\0'){
+				l++;
+				j++;
+			}
+			l++;
+			while(l>0){
+				out[k][l] = out[k][l-1];
+				l--;
+			}
+			out[k][l] = x[i];
+		}
+		return (row+n);
+	}
+}
+
 int main(){
    // char a[15][3];
    // for(int i=0;i<4;i++){
@@ -156,12 +205,37 @@ int main(){
    // 	 }
    // 	 cout<<endl;
    // }
-   long long  int n;
-   cout<<"enter stairs :- ";
-   cin>>n;
-   long long int a[n+1] = {0};
-   long long int out = n_step(n,a);
-   cout<<out<<endl;
 
-   return 0;
+
+   // long long  int n;
+   // cout<<"enter stairs :- ";
+   // cin>>n;
+   // long long int a[n+1] = {0};
+   // long long int out = n_step(n,a);
+   // cout<<out<<endl;
+
+    map<int, string> M;
+    M.insert(pair<int,string>(1,""));
+    M.insert(pair<int,string>(2,"abc"));
+    M.insert(pair<int,string>(3,"def"));
+    M.insert(pair<int,string>(4,"ghi"));
+    M.insert(pair<int,string>(5,"jkl"));
+    M.insert(pair<int,string>(6,"mno"));
+    M.insert(pair<int,string>(7,"pqrs"));
+    M.insert(pair<int,string>(8,"tuv"));
+    M.insert(pair<int,string>(9,"wxyz"));
+    M.insert(pair<int,string>(0," "));
+
+
+    int a[10] = {2,7,9,9};
+    char out[200][6];
+    int row = Keypad(a,out,0,3,M);
+    for(int i=0;i<row;i++){
+  	  for(int j=0;out[i][j]!='\0';j++){
+  		cout<<out[i][j];
+  	  }
+  	 cout<<endl;
+    }
+
+    return 0;
 }
