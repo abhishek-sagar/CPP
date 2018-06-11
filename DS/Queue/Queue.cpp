@@ -53,6 +53,19 @@ public:
 	}
 };
 
+template <typename T>
+Node<T>* ReverseQ(Node<T>* front , Node<T>** rear){
+	if(front == (*rear) || front == NULL){
+		return front;
+	}else{
+		Node<T>* temp = ReverseQ(front->next , rear);
+        front->next->next = front;
+        front->next = NULL;
+        (*rear) = front;
+        return temp;        
+	}
+}
+
 int main(){
      Queue<int> Q;
      for(int i=0;i<10;i++){
@@ -62,5 +75,11 @@ int main(){
      Q.Dequeue();
      cout<<"now front : "<<(Q.front->data)<<endl;
      cout<<"empty or not : "<<Q.Isempty()<<endl;
+
+     // Q.front = ReverseQ(Q.front , & Q.rear);
+     // Q.PrintQ();
+     // Q.Enqueue(11);
+     // Q.PrintQ(); 
+
      return 0;
 }
