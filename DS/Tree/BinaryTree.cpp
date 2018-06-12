@@ -4,6 +4,7 @@
 #include<stack>
 #include<queue>
 #include<climits>
+#include<vector>
 using namespace std;
 
 Node<int>* takeBTInput() {
@@ -414,21 +415,6 @@ bool CheckMirror(Node<int>* root1 , Node<int>* root2){
 }
 
 
-bool LCA(Node<int>* root,int x,int y){
-	if(root == NULL){
-		return false;
-	}else if(root->data == x || root->data == y){
-        return true;
-	}else{
-		bool leftside = LCA(root->left,x,y);
-		bool rightside = LCA(root->right,x,y);
-		if(leftside && rightside){
-			cout<<"LCA : "<<root->data<<endl;
-			return true;
-		}else return (leftside? leftside : rightside);
-	}
-}
-
 Node<int>* lca(Node<int>* root,int x,int y){
 	if(root == NULL){
 		return root;
@@ -497,13 +483,109 @@ Node<int> * Construct_I_Pre(int in[],int pre[],int si_p,int end_p,int si_i, int 
 
 }
 
+bool Is_BST(Node<int>* root){ // simple but wrong
+	if(root == NULL){
+		return true;
+	}else if(root->left!=NULL && root->left->data > root->data){
+		return false;
+	}else if(root->right!=NULL && root->right->data < root->data){
+		return false;
+	}else{
+		bool leftside = Is_BST(root->left);
+		bool rightside = Is_BST(root->right);
+		if(leftside && rightside){
+			return true;
+		}else{
+			return false;
+		}
+	}
+}
 
-// 1 2 -1 -1 3 -1 -1
+bool Is_BST2(Node<int>* root,int min,int max){ // root data should in between min and max
+	if(root == NULL){
+		return true;
+	}else if(root->data < min || root->data > max){
+		return false;
+	}else{
+		return(Is_BST2(root->left,min,root->data - 1) && 
+			   Is_BST2(root->right,root->data + 1, max));
+	}
+}
+// Another method can be Inorder traversal and storing the elements in array
+// then check weather the array is sorted or not.
+
+// for improving the time complexity we can check only the prev node data;
+
+
+
+// **************** // Max bst Size
+
+vector<int> maxbstinbt(Node<int>* root){
+    vector<int> v;
+    if(root == NULL){
+        return v;
+    }else{
+        vector<int> vleft = maxbstinbt(root->left);
+        vector<int>::iterator it = vleft.begin();
+        while(it != vleft.end()){
+            v.push_back(*it);
+            it++;
+        }
+        v.push_back(root->data);
+        vector<int> vright = maxbstinbt(root->right);
+        it = vright.begin();
+        while(it != vright.end()){
+            v.push_back(*it);
+            it++;
+        }
+        return v;
+    }
+}
+
+int maxBST_In_BT(Node<int>* root){  // O(n) and O(n)
+    vector<int> v = maxbstinbt(root);
+    int max=1,i=0,j=1;
+    int l = v.size();
+    while(i<l-1){
+        if(v.at(i) <= v.at(i+1)){
+            i++;
+            j++;
+        }else{
+            if(j>max){
+                max = j;
+            }
+            i++;
+            j=1;
+        }
+    }
+    return (j>max? j : max);
+}
+
+//*****************//
+
+
+//*********************MOST IMPORTANT ************************//
+/*Print all Nodes at a distance of k from a given node 
+  devide the question into two parts 
+  1. Nodes in the subtree rooted with target node. print all of those
+  2. for the remaining nodes find lca of each node with the given node
+     and from lca calculate the min distance b/w them if lies at k 
+     distance apart so print it.
+
+  complexity seems to be greater than O(n) but on close look , find that
+  each node is visited atmost twice so time complexity is O(n).
+  */
+//************************************************************//
+
+
+
+// 4 2 1 -1 -1 3 -1 -1 6 5 -1 -1 7 -1 -1
 // 1 2 3 -1 -1 4 -1 -1 5 6 -1 -1 7 -1 -1
 //1 2 4 -1 -1 10 -1 -1 3 5 7 -1 -1 8 -1 -1 6 -1 9 -1 -1
+// 25 18 19 -1 15 -1 -1 20  18 -1 -1 25 -1 -1 50 35 20 -1 25 -1 -1 40-1 -1 60 55 -1 -1 70 -1 -1
 int main(){
-    // Node<int>* root = takeBTInput();
-    // levelorder(root);
+    Node<int>* root = takeBTInput();
+    levelorder(root);
     
     // cout<<"height : "<<height_I(root)<<endl;
     // cout<<"diameter : "<<diameter(root)<<endl;
@@ -534,9 +616,13 @@ int main(){
     // PrintZigZag(root);
     // cout<<"depth of 7 : "<<DepthOfNode(root,7)<<endl;
 
-    int in[] = {4,2,10,1,7,5,8,3,6,9};
-    int pre[] = {1,2,4,10,3,5,7,8,6,9};
-    Node<int>* root = Construct_I_Pre(in,pre,0,9,0,9);
-    levelorder(root);
+    // int in[] = {4,2,10,1,7,5,8,3,6,9};
+    // int pre[] = {1,2,4,10,3,5,7,8,6,9};
+    // Node<int>* root = Construct_I_Pre(in,pre,0,9,0,9);
+    // levelorder(root);
+
+    //cout<<endl<<Is_BST2(root,INT_MIN,INT_MAX)<<endl;
+
+    cout<<"max bst size : "<<maxBST_In_BT(root)<<endl;
     return 0;
 }
