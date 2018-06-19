@@ -184,7 +184,7 @@ public:
         return;
     }
 
-    void BFSTraversal(){
+    void BFSTraversal(){ // prob in case a vertex have not any edge with other vertex.
         // bool* visited = new bool[totalVertices()];
         // for(int i=0;i<totalVertices();i++){
         //     visited[i] = false;
@@ -254,7 +254,6 @@ public:
       }
       return currentPathlen;
     }
-
 
 	~Graph(){
 		delete vertices;
