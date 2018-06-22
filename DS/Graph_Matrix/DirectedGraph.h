@@ -4,6 +4,7 @@
 #include<queue>
 #include<stack>
 #include<map>
+#include<set>
 #include<climits>
 #include<limits>
 using namespace std;
@@ -37,9 +38,9 @@ public:
    	  delete vec;
    }
 
-   void addEdge(int u,int v){
+   void addEdge(int u,int v,int w){
    	vector<int>* first = vertices->at(u);
-   	first->at(v) = 1;
+   	first->at(v) = w;
    	return;
    }
 
@@ -206,7 +207,115 @@ public:
      return;
    }
 
-   
+   int mindist(int dist[],bool visited[]){
+    int min = INT_MAX,min_index;
+    for(int i=0;i<vertices->size();i++){
+      if(dist[i]<min && !visited[i]){
+        min = dist[i];
+        min_index = i;
+      }
+    }
+    return min_index;
+   }
+
+   void dijkastra(int src){
+       bool visited[vertices->size()];
+       int dist[vertices->size()];
+       for(int i=0;i<vertices->size();i++){
+         visited[i] = false;
+         dist[i] = INT_MAX;
+       }
+       dist[src] = 0;
+       for(int i=0;i<vertices->size()-1;i++){
+         int index = mindist(dist,visited);
+         visited[index] = true;
+         vector<int>* adj = vertices->at(index);
+         for(int j=0;j<adj->size();j++){
+          //cout<<"called"<<endl;
+          if((adj->at(j) + dist[index] < dist[j]) && adj->at(j) != 0 
+                                          && dist[index] != INT_MAX && !visited[j]){
+            dist[j] = adj->at(j) + dist[index];
+          }
+         }
+       }
+       for(int i=0;i<vertices->size();i++){
+        cout<<dist[i]<<",";
+       }
+       cout<<endl;
+       return;
+   }
+
+   void BellmanFord(int src){
+     int dist[vertices->size()];
+     for(int i=0;i<vertices->size();i++){
+      dist[i] = INT_MAX;
+     }
+     dist[src] = 0;
+     set<pair<int,int>> s;
+
+     for(int i=0;i<vertices->size();i++){ // maintaining all edges in set of pairs
+      vector<int>* v = vertices->at(i);
+      for(int j=0;j<v->size();j++){
+        if(v->at(j) != 0){
+           pair<int,int> p(i,j);
+           s.insert(p);
+        }
+      }
+     }
+
+     for(int i=0;i<vertices->size()-1;i++){ // iterate over graph v-1 times
+      set<pair<int,int>>::iterator it = s.begin();  // for all the edges
+      while(it != s.end()){
+        pair<int,int> p = (*it);
+        int x = p.first;
+        int y = p.second;
+        if((dist[y] > dist[x] + (vertices->at(x))->at(y)) && dist[x] != INT_MAX){
+          dist[y] = dist[x] + (vertices->at(x))->at(y);
+        }
+        it++;
+      }
+     }
+
+     for(int i=0;i<vertices->size();i++){
+      cout<<dist[i]<<",";
+     }
+     cout<<endl;
+     return;
+   }
+
+   void PrimsAlgo(int src){ // same to same dijkastra only not adding the total sum
+       int parent[vertices->size()];
+       int dist[vertices->size()];
+       bool visited[vertices->size()];
+       for(int i=0;i<vertices->size();i++){
+         dist[i] = INT_MAX;
+         visited[i] = false;
+       }
+       dist[src] = 0;
+       parent[src] = -1;
+       for(int i=0;i<vertices->size()-1;i++){
+         int index = mindist(dist,visited);
+         visited[index] = true;
+         vector<int>* adj = vertices->at(index);
+         for(int j=0;j<adj->size();j++){
+          if(adj->at(j) != 0 && dist[j] > adj->at(j) && !visited[j]){
+            dist[j] = adj->at(j);
+            parent[j] = index;
+          }
+         }
+       }
+       int cost = 0;
+       for(int i=1;i<vertices->size();i++){
+          cost = cost + (vertices->at(i))->at(parent[i]);
+       } 
+       cout<<"Minimum Cost Spanning tree : "<<cost<<endl;
+       for(int i=0;i<vertices->size();i++){
+          cout<<"parent of "<<i<<" is "<<parent[i]<<endl;
+       }
+       cout<<endl;
+       return;
+   }
+
 };
 
 #endif
