@@ -42,6 +42,6 @@ int main(){
 	g.dijkastra(2);
 	g.BellmanFord(2);
 	g.PrimsAlgo(0);
-	g.KruskalsAlgo();
+	g.KruskalAlgo();
 	return 0;
 }

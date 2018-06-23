@@ -81,9 +81,7 @@ public:
            	   	  minimumI = 2*i+1;
            	   } 
            }
-           if(minimumI == i){
-           	break;
-           }else{
+           if(minimumI != i){
            	   pair<int,int> temp1 = v->at(i);
                pair<int,int> temp2 = v->at(minimumI); 
                v->at(i) = v->at(minimumI);

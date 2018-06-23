@@ -240,57 +240,55 @@ public:
        return;
    }
    // used for the sort function 
-   static bool compare(pair<pair<int,int>,int> p1,pair<pair<int,int>,int> p2){
-       return (p1.second < p2.second);
-   }
+   
+static bool compare1(pair<pair<int,int>,int> p1,pair<pair<int,int>,int> p2){
+  return (p1.second < p2.second);
+}
 
-   int parentI(int i, int parent[]){
-   	 if(parent[i] == i){
-   	 	return i;
-   	 }else{
-   	 	return parentI(parent[i],parent);
-   	 }
-   }
+int parentI(int i,int parent[]){
+  if(parent[i] == i){
+    return i;
+  }else{
+    return parentI(parent[i],parent);
+  }
+}
 
-   void KruskalsAlgo(){
-   	  vector<pair<pair<int,int>,int>>* edges = new vector<pair<pair<int,int>,int>>();
-      for(int i=0;i<vertices->size();i++){ // extract all the edges with weight
-      	 vector<int>* adj = vertices->at(i);
-      	 for(int j=0;j<adj->size();j++){
-      	 	if(adj->at(j)!=0){
-      	 		pair<int,int> p(i,j);
-      	 		pair<pair<int,int>,int> P(p,adj->at(j));
-      	 		edges->push_back(P);
-      	 	}
-      	 }
+void KruskalAlgo(){
+  vector<pair<pair<int,int>,int>>* edges = new vector<pair<pair<int,int>,int>>();
+  for(int i=0;i<vertices->size();i++){
+    vector<int>* adj = vertices->at(i);
+    for(int j=0;j<adj->size();j++){
+      if(adj->at(j) != 0){
+        pair<int,int> p(i,j);
+        pair<pair<int,int>,int> P(p,adj->at(j));
+        edges->push_back(P);
       }
-      int parent[vertices->size()];
-      for(int i=0;i<vertices->size();i++){
-      	parent[i] = i;
-      }
-      sort(edges->begin(),edges->end(),compare); // sort according to weight
+    }
+  }
+    int parent[vertices->size()];
+    for(int i=0;i<vertices->size();i++){
+      parent[i] = i;
+    }
 
-      int count = 0;  // maintainig count for unvisited edge in vector Edges;
-      int i=0;
-      while(i<vertices->size()-1){  // minimum spanning tree will have v-1 edges
-          int min_index = count;
-          count++; 
-          pair<pair<int,int>,int> p = edges->at(min_index);
-          pair<int,int> edge = p.first;
-          int start = edge.first;
-          int end = edge.second;
-          // check wether start and end have same parent
-          // if yes then discard that edge because it forms a cycle else add the cycle to MST
-          int startParentI = parentI(start,parent);
-          int endParentI = parentI(end,parent);
-          if(startParentI != endParentI){
-          	cout<<start<<" -- "<<end<<", weight : "<<(vertices->at(start))->at(end)<<endl;
-            parent[start] = end;
-            i++;
-          }
+    sort(edges->begin(),edges->end(),compare1);
+    int count = 0;
+    int v=0;
+    while(v<vertices->size()-1){
+      pair<pair<int,int>,int> P = edges->at(count);
+      count++;
+      pair<int,int> edge = P.first;
+      int start = edge.first;
+      int end = edge.second;
+      int startParentI = parentI(start,parent);
+      int endParentI = parentI(end,parent);
+      if(startParentI != endParentI){
+        cout<<start<<" -- "<<end<<", W : "<<P.second<<endl;;
+        parent[end] = start;
+        v++;
       }
-      return;
-   }
+    }
+    return;
+}
 
 };
 
