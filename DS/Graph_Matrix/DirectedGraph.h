@@ -316,6 +316,82 @@ public:
        return;
    }
 
+// Minimize Cash Flow among a given set of friends who have borrowed money from each other
+// directed graph problem.
+
+/* Algo : 
+   1. make an array of net amount of each vertex(total credited - total debited);
+   2. send this array to the recursive function 
+   3. get the most debited index(db) and most credited index(cr)
+   4. get min of of the most debited and most credited amount;
+   5. let say debited is less so and for example it be 3500;
+   6. amount[cr] -= 3500 & amount[debited] += 3500; so debited will become 0;
+   7. again call the recursive function on this updated amount.  
+*/
+
+int getMin(int x,int y){
+  return(x<y ? x : y);
+}
+
+int getMaxI(int amount[]){
+  int max_index = -1;
+    int max = -999999;
+    for(int i=0;i<vertices->size();i++){
+      if(amount[i] > max){
+        max = amount[i];
+        max_index = i;
+      }
+    }
+    return max_index;
+}
+
+int getMinI(int amount[]){
+  int min_index = -1;
+    int min = 999999;
+    for(int i=0;i<vertices->size();i++){
+      if(amount[i] < min){
+        min = amount[i];
+        min_index = i;
+      }
+    }
+    return min_index;
+}
+
+void MinimizeCashFlowRec(int amount[]){
+     int min_index = getMinI(amount);
+     int max_index = getMaxI(amount);
+
+     if(amount[max_index] == 0 && amount[min_index] == 0){
+      return;
+     }
+
+     int min = getMin(-amount[min_index],amount[max_index]);
+     amount[max_index] -= min;
+     amount[min_index] += min;
+
+     cout<<min_index<<" pays "<<min<<" to "<<max_index<<endl;
+
+     MinimizeCashFlowRec(amount);
+}
+
+void MinimizeCashFlow(){
+  int amount[vertices->size()];
+  for(int i=0;i<vertices->size();i++){
+    int total_debit = 0;
+    int total_credit = 0;
+    for(int j=0;j<vertices->size();j++){
+            total_debit += (vertices->at(i))->at(j);
+    }
+        for(int j=0;j<vertices->size();j++){
+          total_credit += (vertices->at(j))->at(i);
+        }
+        amount[i] = total_credit - total_debit;
+  }
+  MinimizeCashFlowRec(amount);
+  return;
+}
+
+
 };
 
 #endif

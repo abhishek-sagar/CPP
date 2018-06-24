@@ -5,6 +5,7 @@
 #include<climits>
 #include<limits>
 #include<set>
+#include<map>
 #include<algorithm>
 #include "heap.h" // this is not used but can be used to get minimum edge in o(logn)
 using namespace std;
@@ -289,6 +290,81 @@ void KruskalAlgo(){
     }
     return;
 }
+
+//  minimum no. of colors required to color the whole graph such that no two adj
+//  vertices have same color.
+//  Problem is similar to DFS with some constraints 
+
+
+class Visited{
+public:
+  int index;
+  int color;
+
+  Visited(int i,int c){
+       this->index = i;
+       this->color = c;
+  }
+};
+
+void GC(vector<Visited>& vis,int i,int& totalcolorNum){
+  vector<int>* adj = vertices->at(i);
+  int DiffAdjColor = 0;   // it will count how many of ajs hav diff colors
+  map<int,int> adjcolors;     // it contains the assigned color and the index of vertex.
+  for(int j=0;j<adj->size();j++){
+        if(adj->at(j) != 0){
+            Visited v = vis.at(j);
+            if(v.index != -1){
+              map<int,int>::iterator it = adjcolors.find(v.color);
+              if(it == adjcolors.end()){
+                DiffAdjColor++;
+                adjcolors.insert(pair<int,int>(v.color,v.index));
+              }
+            }
+        }
+    }
+    if(DiffAdjColor == totalcolorNum){ // This is the main logic 
+      Visited v = vis.at(i); 
+      v.index = i;
+      v.color = totalcolorNum;
+      vis.at(i) = v;
+      totalcolorNum++;
+    }else{
+      for(int j=0;j<adj->size();j++){
+           if(adj->at(j) == 0){
+             Visited v = vis.at(j);
+             if(v.index != -1){
+              Visited u = vis.at(i);
+              u.index = i;
+              u.color = v.color;
+              vis.at(i) = u;
+             }
+           }
+      }
+    }
+    return;
+}
+
+void GraphColoring(){
+    vector<Visited> vis;
+    for(int i=0;i<vertices->size();i++){
+      Visited v(-1,-1);
+      vis.push_back(v);
+    }
+    int totalcolorNum = 0;//it maintains total color, and also for assigning new color no.
+    for(int i=0;i<vertices->size();i++){
+      Visited v = vis.at(i);
+      if(v.index == -1){
+        GC(vis,i,totalcolorNum);
+      }
+    }
+
+    for(int i=0;i<vertices->size();i++){
+      Visited v = vis.at(i);
+      cout<<"index : "<<v.index<<", color : "<<v.color<<endl;
+    }
+}
+
 
 };
 

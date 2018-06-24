@@ -1,5 +1,5 @@
 #include<iostream>
-#include "Graph.h"
+#include "DirectedGraph.h"
 using namespace std;
 
 int main(){
@@ -9,14 +9,15 @@ int main(){
 	g.addVertex();
 	g.addVertex();
 	g.addVertex();
+
     g.addEdge(0,1,4);
     g.addEdge(0,2,8);
-    g.addEdge(1,2,2);
     g.addEdge(3,1,2);
     g.addEdge(2,3,1);
     g.addEdge(2,4,8);
     g.addEdge(4,3,3);
-
+    g.addEdge(4,1,3);
+    
 	// g.addVertex();
 	// g.addVertex();
 	// g.addVertex();
@@ -39,9 +40,14 @@ int main(){
 	//g.BFSTraversal();
 	//g.TopologicalSort();
 	//g.ShortestPath(2,7);
-	g.dijkastra(2);
-	g.BellmanFord(2);
-	g.PrimsAlgo(0);
-	g.KruskalAlgo();
+
+	// g.dijkastra(2);
+	// g.BellmanFord(2);
+	// g.PrimsAlgo(0);
+	// g.KruskalAlgo();
+	
+	g.GraphColoring();
+
+	//g.MinimizeCashFlow(); -> directed graph problem
 	return 0;
 }
