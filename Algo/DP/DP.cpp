@@ -1,8 +1,12 @@
 #include<iostream>
 #include<vector>
+#include<algorithm>
 #include<math.h>
 #include<climits>
 #include<limits>
+#include<stack>
+#include<string>
+#include<set>
 using namespace std;
 
 // 1. 0/1 knapsack prob
@@ -282,6 +286,489 @@ int RodCutting(int RodParts[],int EachValue[],int n,int rodlength){
 	cout<<"maximum profit is : "<<m[n][rodlength]<<endl;
 }
 
+// 12. Job scheduling prob
+
+static bool compare(pair<pair<int,int>,int> P1,pair<pair<int,int>,int> P2){
+	return (P1.second < P2.second);
+}
+
+void JobSche(int StartTime[],int EndTime[],int profit[],int n){
+	vector<pair<pair<int,int>,int>> v;
+	for(int i=0;i<n;i++){
+		pair<int,int> p(StartTime[i],profit[i]);
+		pair<pair<int,int>,int> P(p,EndTime[i]);
+		v.push_back(P);
+	}
+	sort(v.begin(),v.end(),compare);
+    int m[n];
+    for(int i=0;i<n;i++){
+    	pair<pair<int,int>,int> P = v.at(i);
+    	pair<int,int> p = P.first;
+    	m[i] = p.second;
+    }
+
+	for(int j=1;j<n;j++){
+		for(int i=0;i<j;i++){
+			pair<pair<int,int>,int> P1 = v.at(i);
+			pair<pair<int,int>,int> P2 = v.at(j);
+			pair<int,int> p1 = P1.first;
+			pair<int,int> p2 = P2.first;
+			int end_i = P1.second;
+			int start_j = p2.first;
+			int profit_j = p2.second;
+			if(end_i <= start_j){
+               int q = m[i]+profit_j;
+               if(q>m[j]){
+               	m[j] = q;
+               }
+			}
+		}
+	}
+	int maxprofit = INT_MIN;
+	for(int i=0;i<n;i++){
+		if(m[i]>maxprofit){
+			maxprofit = m[i];
+		}
+	}
+	cout<<"Max Profit After Job Scheduling is : "<<maxprofit<<endl;
+	return;
+}
+
+// 13. Egg Dropping Puzzel, minimum no. of tests require to check at which floor,dropping 
+//     the egg will result into breaking it.
+
+void EggDrop(int eggs,int floors){
+	int m[eggs+1][floors+1];
+    for(int i=0;i<=eggs;i++){
+    	m[i][0] = 0;
+    }
+    for(int i=0;i<=floors;i++){
+    	m[0][i] = 0;
+        m[1][i+1] = i+1; // intializing the first row;
+    }
+
+    for(int i=2;i<=eggs;i++){
+    	for(int j=1;j<=floors;j++){
+    		if(j<i){
+    			m[i][j] = m[i-1][j]; // if eggs > floors copy from top
+    		}else{
+    			// min of ( 1+max(agar kth pe break ho gaya to k-1 floors pe call krdo 
+    			// with 1 less egg(i-1) , agar break nhi hua to egg to utne hi h (i)
+    			// and call krdo j-k floors ke liye) )
+    			int Till_min = INT_MAX;
+    			for(int k=1;k<=j;k++){
+                   int q = 1+max(m[i-1][k-1],m[i][j-k]);
+                   if(q<Till_min){
+                   	Till_min = q;
+                   }
+    			}
+    			m[i][j] = Till_min;
+    		}
+    	}
+    }
+    cout<<"min tests require to check egg will break are : "<<m[eggs][floors]<<endl;
+    return;
+}
+
+// 14. Longest common substring
+
+void LCSubStr(char s1[],char s2[],int n1,int n2){
+	int m[n2+1][n1+1];
+	for(int i=0;i<=n1;i++){
+		m[0][i] = 0;
+	}
+	for(int i=0;i<=n2;i++){
+		m[i][0] = 0;
+	}
+
+	for(int i=1;i<=n2;i++){
+		for(int j=1;j<=n1;j++){
+			if(s2[i-1]!=s1[j-1]){
+				m[i][j] = 0;
+			}else{
+				m[i][j] = 1+m[i-1][j-1];
+			}
+		}
+	}
+
+	// iterate though the matrix and find the largest no.
+    int max = INT_MIN;
+    for(int i=1;i<=n2;i++){
+    	for(int j=1;j<=n1;j++){
+          if(m[i][j] > max){
+          	max = m[i][j];
+          }
+    	}
+    }
+
+	cout<<"Longest common substring : "<<max<<endl;
+	return;
+}
+
+// Max sum contigious subarray,Kadane's Algo.
+
+pair<pair<int,int>,int> MaxSumSubarray(int a[],int n){ // O(n)
+	int i,j,startI,endI,k;
+	int Max_sum_till = 0;
+	int currentsum = 0;
+	for(j=0;j<n;j++){
+		currentsum = currentsum+a[j];
+		if(currentsum < 0){
+			currentsum = 0;
+			k = j+1;
+		}
+		else{
+			if(currentsum > Max_sum_till){
+				Max_sum_till = currentsum;
+				endI = j;
+				startI = k;
+			}
+		}
+	}
+	pair<int,int> p(startI,endI);
+	pair<pair<int,int>,int> P(p,Max_sum_till);
+	return P;
+}
+
+// 16. Max sum SubRectangle in a 2d Matrix
+
+void MaxSumSubRect(int m[][5],int rows,int cols){
+	int a[rows];
+    int CurrentSum,MaxSum = INT_MIN,left,right,top,bottom;
+    for(int l=0;l<cols;l++){
+
+    	for(int i=0;i<rows;i++){
+    		a[i] = 0;
+    	}
+
+    	for(int r = l;r<cols;r++){
+
+            for(int i=0;i<rows;i++){
+    		   a[i] = a[i] + m[i][r];
+            }
+
+            pair<pair<int,int>,int> P = MaxSumSubarray(a,rows);
+            pair<int,int> p = P.first;
+            CurrentSum = P.second;
+            if(CurrentSum>MaxSum){
+            	MaxSum = CurrentSum;
+            	left = l;
+            	right = r;
+            	top = p.first;
+            	bottom = p.second;
+            }
+
+    	}
+    }
+    cout<<"MaxSum SubRectangle : "<<MaxSum<<endl;
+    return;
+}
+
+// 17. Max Size Rect of 1's in a 2d matrix;
+
+int AreaUnderHist(int hist[],int n){
+    int i=0,MaxArea = INT_MIN;
+    stack<int> s;
+    while(i<n){
+    	if(s.empty() || hist[i] >= hist[s.top()]){
+    		s.push(i);
+    		i++;
+    	}else{
+    		int current = s.top();
+    		s.pop();
+            int CurrentArea = hist[current]*((s.empty())?i:(i-1-s.top()));
+            if(CurrentArea > MaxArea){
+            	MaxArea = CurrentArea;
+            }
+    	}
+    }
+    return MaxArea;
+}
+
+void MaxRectSize(int m[][4],int rows,int cols){
+	int a[cols] = {0};
+    int MaxSize = INT_MIN;
+	for(int t=0;t<rows;t++){
+		for(int i=0;i<cols;i++){
+			if(m[t][i] == 0){
+				a[i] = 0;
+			}else{
+				a[i] = a[i] + m[t][i];
+			}
+		}
+        int CurrentSize = AreaUnderHist(a,cols);
+        if(CurrentSize > MaxSize){
+        	MaxSize = CurrentSize;
+        }
+	}
+	cout<<"MaxSize of 1's Rect is : "<<MaxSize<<endl;
+	return;
+}
+
+// 18. Word Break Problem
+
+void WordBreak(string s,int n,set<string> dictionary){
+	bool m[n][n];
+	for(int i=0;i<n;i++){
+		char test[3];
+		int len = s.copy(test,1,i);
+		test[len] = '\0';
+		set<string>::iterator it = dictionary.find(test);
+		if(it!=dictionary.end()){
+			m[i][i] = true;
+		}else{
+			m[i][i] = false;
+		}
+	}
+
+	for(int l = 2;l<=n;l++){
+		for(int i=0;i<n-l+1;i++){
+			int j = l+i-1;
+			char check[20];
+			int len = s.copy(check,j-i+1,i);
+            check[len] = '\0';
+            set<string>::iterator it = dictionary.find(check);
+            if(it != dictionary.end()){
+            	m[i][j] = true;
+            }else{
+            	for(int k=i;k<j;k++){
+            		if(m[i][k] && m[k+1][j]){
+            			m[i][j] = true;
+            			break;
+            		}else{
+            			m[i][j] = false;
+            		}
+            	}
+            }
+		}
+	}
+
+    if(m[0][n-1]){
+    	cout<<"'"<<s<<"'"<<" can be formed using dictionary."<<endl;
+    }else{
+    	cout<<"'"<<s<<"'"<<" cannot be formed."<<endl;
+    }
+    return;
+} 
+
+// 19. minimum cost path
+
+void MinimumCostPath(int m[][3],int rows,int cols){
+	int out[rows][cols];
+	out[0][0] = m[0][0];
+	for(int i=1;i<rows;i++){
+		out[i][0] = out[i-1][0]+m[i][0];
+	}
+	for(int i=1;i<cols;i++){
+		out[0][i] = out[0][i-1]+m[0][i];
+	}
+
+	for(int i=1;i<rows;i++){
+		for(int j=1;j<cols;j++){
+			out[i][j] = m[i][j]+min(out[i-1][j],out[i][j-1]);
+		}
+	}
+	for(int i=0;i<rows;i++){
+		for(int j=0;j<cols;j++){
+			cout<<out[i][j]<<",";
+		}
+		cout<<endl;
+	}
+	cout<<"min cost path : "<<out[rows-1][cols-1]<<endl;
+}
+
+// 20. minimum jumps to reach end of an array
+
+void MinJumps(int a[],int n){
+	int jumps[n]; // it stores the no. of jumps till jth element
+	int actualjump[n]; // it stores that from which index the jumps is taken
+	jumps[0] = 0;
+	for(int i=1;i<n;i++){
+    	jumps[i] = 999999;
+    }
+    for(int j=1;j<n;j++){
+    	for(int i=0;i<j;i++){
+    		if(a[i]+i >= j){
+               int q = 1+jumps[i];
+               if(q<jumps[j]){
+               	jumps[j] = q;
+               	actualjump[j] = i;
+               }
+    		}
+    	}
+    }
+    cout<<"Min jumps require to reach end : "<<jumps[n-1]<<endl;
+    return;
+}
+
+
+// 21. Max Sub square square matrix;
+
+void MaxSubSqMat(int input[][5],int rows,int cols){
+    int m[rows+1][cols+1];
+    for(int i=0;i<=rows;i++){
+    	m[i][0] = 0;
+    }
+    for(int i=0;i<=cols;i++){
+    	m[0][i] = 0;
+    }
+    for(int i=1;i<=rows;i++){
+    	for(int j=1;j<=cols;j++){
+    		if(input[i][j] == 0){
+    			m[i][j] = 0;
+    		}else{
+    			m[i][j] = 1 + min(m[i][j-1],min(m[i-1][j-1],m[i-1][j]));
+    		}
+    	}
+    }
+    int MaxSubArraySize = INT_MIN;
+    for(int i=1;i<=rows;i++){
+    	for(int j=1;j<=cols;j++){
+    		if(m[i][j] > MaxSubArraySize){
+    			MaxSubArraySize = m[i][j];
+    		}
+    	}
+    }
+    cout<<"The Max Sub Square Matrix Size is : "<<MaxSubArraySize<<endl;
+    return;
+}
+
+// 22. optimal strategy for the game
+
+void OptimalStrategy(int a[],int n){
+	pair<int,int> m[n][n];
+	for(int i=0;i<n;i++){
+		for(int j=0;j<n;j++){
+		   pair<int,int> p(0,0);
+		   m[i][j] = p;
+		}
+	}
+	for(int i=0;i<n;i++){
+		pair<int,int> p(a[i],0);
+		m[i][i] = p;
+	}
+    
+    for(int l=2;l<=n;l++){
+       for(int i=0;i<n-l+1;i++){
+       	int j = l+i-1;
+        (m[i][j]).first =  max(a[i]+(m[i+1][j]).second ,
+        	                   a[j]+(m[i][j-1]).second);
+        (m[i][j]).second =  min((m[i+1][j]).first,(m[i][j-1]).first);	                    
+       }
+    }
+    pair<int,int> p = m[0][n-1];
+    cout<<"Max score of first player : "<<p.first<<endl;
+    return;
+}
+
+// 23. staircase problem
+
+int Staircase(int stairs,int a[]){
+	if(stairs == 0){
+		return 0;
+	}else if(stairs == 1){
+        return 1;
+	}else if(stairs == 2){
+		return 2;
+	}else if(stairs == 3){
+		return 4;
+	}else if(a[stairs]){
+		return a[stairs];
+	}else{
+		int val = Staircase(stairs-1,a)+Staircase(stairs-2,a)+Staircase(stairs-3,a);
+        a[stairs] = val;
+        return val;
+	} 
+}
+
+
+// 23. Max Sum non adjacents elements of array
+
+void MaxNonAdjSum(int input[],int n){
+	int incl = input[0];
+	int excl = 0;
+	for(int i=1;i<n;i++){
+		int temp = incl;
+		incl = max(incl,excl+input[i]);
+		excl = temp;
+	}
+	cout<<"MaxNonAdjSum : "<<incl<<endl;
+}
+
+// 24. Longest Bitonic subseq.
+
+void LBS(int input[],int n){
+	int increasing[n];
+	int decreasing[n];
+	int ans[n];
+	for(int i=0;i<n;i++){
+		increasing[i] = 1;
+        decreasing[i] = 1;
+	}
+	for(int j=1;j<n;j++){
+		for(int i=0;i<j;i++){
+			if(input[j]>input[i]){
+				increasing[j] = max(increasing[j],increasing[i]+1);
+			}
+		}
+	}
+	for(int j = n-2;j>=0;j--){
+		for(int i=n-1;i>j;i--){
+			if(input[j]>input[i]){
+				decreasing[j] = max(decreasing[j],decreasing[i]+1);
+			}
+		}
+	}
+	for(int i=0;i<n;i++){
+        ans[i] = increasing[i]+decreasing[i] -1;
+	}
+	int lbs = INT_MIN;
+	for(int i=0;i<n;i++){
+        if(ans[i]>lbs){
+        	lbs = ans[i];
+        }
+	}
+    cout<<"LBS : "<<lbs<<endl;
+    return;
+}
+
+
+// 25. total paths from top to bottom right in 2d matrix
+
+void totalpaths(int input[][4],int rows,int cols){
+	int m[rows][cols];
+	for(int i=0;i<rows;i++){
+		m[i][0] = 1;
+	}
+	for(int i=0;i<cols;i++){
+		m[0][i] = 1;
+	}
+
+	for(int i=1;i<rows;i++){
+		for(int j=1;j<cols;j++){
+			m[i][j] = m[i][j-1]+m[i-1][j];
+		}
+	}
+	cout<<"total paths : "<<m[rows-1][cols-1]<<endl;
+	return;
+}
+
+// 26. count total BST with n nodes
+// Total binary trees are : totalBST * n!;
+
+void totalBST(int n){
+	int T[n+1] = {0};
+	T[0] = 1;
+	T[1] = 1;
+	for(int i=2;i<=n;i++){
+		for(int j=0;j<i;j++){
+			T[i] += T[j]*T[i-j-1];
+		}
+	}
+	cout<<"Total BST : "<<T[n]<<endl;
+	return;
+}
+
 int main(){
    int wt[] = {40,10,20,24};
    int val[] = {280,100,120,120};
@@ -323,6 +810,72 @@ int main(){
    int EachValue[] = {2,5,7,8};
    RodCutting(RodParts,EachValue,4,5);
 
+   int StartTime[] = {4,2,6,7,1,5};
+   int EndTime[] = {6,5,7,9,3,8};
+   int Profit[] = {5,6,4,2,5,11};
+   JobSche(StartTime,EndTime,Profit,6);
+
+   EggDrop(2,6);
+
+   char s5[] = {'a','b','c','d','a','f'};
+   char s6[] = {'z','b','c','d','f'};
+   LCSubStr(s5,s6,6,5);
+
+
+   int input[][5] = {{ 2,  1, -3, -4,  5},
+                    { 0,  6,  3,  4,  1},
+                    { 2, -2, -1,  4, -5},
+                    {-3,  3,  1,  0,  3}};
+   MaxSumSubRect(input,4,5);
+
+
+   int input1[][4] = {{1,1,1,0},
+                      {1,1,1,1},
+                      {0,1,1,0},
+                      {0,1,1,1},
+                      {1,0,0,1},
+                      {1,1,1,1}};
+   MaxRectSize(input1,6,4);
+
+
+   set<string> dictionary;
+   dictionary.insert("I");
+   dictionary.insert("am");
+   dictionary.insert("ace");
+   WordBreak("Iamace",6,dictionary);
+
+   int cost[][3] = {{1,2,3},{4,8,2},{1,5,3},{6,2,9}};
+   MinimumCostPath(cost,4,3);
+
+   int j[] = {2,3,1,1,2,4,2,0,1,1}; 
+   MinJumps(j,10);
+
+   int input2[][5] = {{0,0,1,1,1},
+                      {1,0,1,1,1},
+                      {0,1,1,1,1},
+                      {1,0,1,1,1}};
+   MaxSubSqMat(input2,4,5);
+
+   int l[] = {3,9,1,2};
+   OptimalStrategy(l,4);
+
+   int stairs[7] = {0};
+   cout<<"total ways of upstaris : "<<Staircase(6,stairs)<<endl;
+
+   int input3[] = {4,1,1,4,2,1};
+   MaxNonAdjSum(input3,6);
+
+   int input4[] = {2,-1,4,3,5,-1,3,2};
+   LBS(input4,8);
+
+
+   int input5[][4] = {{0,0,1,1},
+                      {1,0,1,1},
+                      {0,1,1,1},
+                      {1,0,1,1}};
    
+   totalpaths(input5,4,4);
+
+   totalBST(5);
    return 0;
 }
