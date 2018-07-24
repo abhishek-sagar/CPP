@@ -140,7 +140,7 @@ void StockSpan(int stock[],int span[],int n){
      s.push(0);
      for(int i=1;i<n;i++){
     	int x = stock[i];
-        while(s.top != NULL && x > stock[s.Top()]){
+        while(s.top != NULL && x >= stock[s.Top()]){
             s.pop();
         }
         span[i] = (s.top == NULL)? i+1 : (i-s.Top());

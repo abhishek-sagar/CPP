@@ -81,6 +81,26 @@ int MatrixMulti(int p[],int n){ // O(n^3)
 	return m[1][n-1];
 }
 
+int Matrix(int a[],int n){
+    int m[n-1][n-1];
+    for(int i=0;i<n-1;i++){
+        m[i][i] = 0;
+    }
+    for(int l=2;l<n;l++){
+        for(int i=0;i<n-l;i++){
+            int j = l+i-1;
+            m[i][j] = 99999;
+            for(int k=i;k<j;k++){
+                int q = m[i][k] + m[k+1][j] + a[i]*a[k+1]*a[j+1];
+                if(q<m[i][j]){
+                    m[i][j] = q;
+                }
+            }
+        }
+    }
+    return m[0][n-2];
+}
+
 // 4. subset sum problem
 
 bool SubsetSum(int a[],int n,int x){
@@ -279,7 +299,7 @@ int RodCutting(int RodParts[],int EachValue[],int n,int rodlength){
 				m[i][j] = m[i-1][j];
 			}else{
 			m[i][j] = max(m[i-1][j],
-			 max(EachValue[i-1]+m[i][j-RodParts[i-1]],EachValue[i-1]+m[i-1][j-RodParts[i-1]]));
+			max(EachValue[i-1]+m[i][j-RodParts[i-1]],EachValue[i-1]+m[i-1][j-RodParts[i-1]]));
 			}
 		}
 	}
@@ -482,6 +502,14 @@ int AreaUnderHist(int hist[],int n){
             }
     	}
     }
+    while(!s.empty()){
+    	int current = s.top();
+    	s.pop();
+        int CurrentArea = hist[current]*((s.empty())?i:(i-1-s.top()));
+        if(CurrentArea > MaxArea){
+        	MaxArea = CurrentArea;
+        }
+    }
     return MaxArea;
 }
 
@@ -505,10 +533,46 @@ void MaxRectSize(int m[][4],int rows,int cols){
 	return;
 }
 
+
+// Max Profit Buying or selling Stock at max k transections
+
+void Stock(int a[],int n,int k){
+    int m[k+1][n];
+    for(int i=0;i<n;i++){
+        m[0][i] = 0;   // if 0 transactions so no profit
+    }
+    for(int i=0;i<=k;i++){
+        m[i][0] = 0;  // if only one stock so no profit
+    }
+    for(int i=1;i<=k;i++){
+        for(int j=1;j<n;j++){
+            int option1 = m[i][j-1]; // do not buy that stock and the profit remain same
+            int option2 = -999999;
+            // option2 is to check all the stocks from 0 to j-1 and check which give max pro.
+            // this loop can be removed by storing maximum (-a[l]+m[i-1][l]) then add to a[j];
+            for(int l = 0;l<j;l++){
+                int q = a[j]-a[l]+m[i-1][l];  // a[j]-a[l] is for sell at j and buy at l
+                if(q>option2){                // m[i-1][l] is for profit for max left   
+                    option2 = q;              // (i-1)th transec. 
+                }
+            }
+            m[i][j] = max(option1,option2);
+        }
+    }
+    cout<<m[k][n-1]<<endl;
+    return;
+}
+
+
 // 18. Word Break Problem
 
 void WordBreak(string s,int n,set<string> dictionary){
 	bool m[n][n];
+	for(int i=0;i<n;i++){
+         for(int j=0;j<n;j++){
+             m[i][j] = 0;
+         }
+    }
 	for(int i=0;i<n;i++){
 		char test[3];
 		int len = s.copy(test,1,i);
@@ -568,12 +632,12 @@ void MinimumCostPath(int m[][3],int rows,int cols){
 			out[i][j] = m[i][j]+min(out[i-1][j],out[i][j-1]);
 		}
 	}
-	for(int i=0;i<rows;i++){
-		for(int j=0;j<cols;j++){
-			cout<<out[i][j]<<",";
-		}
-		cout<<endl;
-	}
+	// for(int i=0;i<rows;i++){
+	// 	for(int j=0;j<cols;j++){
+	// 		cout<<out[i][j]<<",";
+	// 	}
+	// 	cout<<endl;
+	// }
 	cout<<"min cost path : "<<out[rows-1][cols-1]<<endl;
 }
 
@@ -582,27 +646,32 @@ void MinimumCostPath(int m[][3],int rows,int cols){
 void MinJumps(int a[],int n){
 	int jumps[n]; // it stores the no. of jumps till jth element
 	int actualjump[n]; // it stores that from which index the jumps is taken
-	jumps[0] = 0;
-	for(int i=1;i<n;i++){
-    	jumps[i] = 999999;
+	if(a[0] == 0){
+        cout<<"-1"<<endl;
+        return;
     }
-    for(int j=1;j<n;j++){
-    	for(int i=0;i<j;i++){
-    		if(a[i]+i >= j){
-               int q = 1+jumps[i];
-               if(q<jumps[j]){
-               	jumps[j] = q;
-               	actualjump[j] = i;
-               }
-    		}
-    	}
+    for(int i=0;i<n;i++){
+        jumps[i] = INT_MAX;
+    }
+    jumps[0] = 0;
+    
+    for(int i=0;i<n;i++){
+        if(a[i] == 0 && a[i-1] == 1){
+            cout<<"-1"<<endl;
+            return;
+        }
+        int val = min(i+a[i],n-1);
+        for(int j=i+1;j<=val;j++){
+            jumps[j] = min(jumps[j],jumps[i]+1);
+            actualjump[j] = i;
+        }
     }
     cout<<"Min jumps require to reach end : "<<jumps[n-1]<<endl;
     return;
 }
 
 
-// 21. Max Sub square square matrix;
+// 21. Max Sub square matrix;
 
 void MaxSubSqMat(int input[][5],int rows,int cols){
     int m[rows+1][cols+1];
@@ -663,7 +732,7 @@ void OptimalStrategy(int a[],int n){
 
 // 23. staircase problem
 
-int Staircase(int stairs,int a[]){
+int Staircase(int stairs,int a[]){ // Not Optimal solution
 	if(stairs == 0){
 		return 0;
 	}else if(stairs == 1){
@@ -680,6 +749,29 @@ int Staircase(int stairs,int a[]){
         return val;
 	} 
 }
+
+//Best solution for StairCase
+
+// int main()
+//  {
+// 	int x;
+// 	int dp[100001];
+// 	dp[0] = 0;
+// 	dp[1] = 1;
+// 	dp[2] = 2;
+// 	for(int i=3;i<=100001;i++){
+// 	    dp[i] = dp[i-1]+dp[i-2];
+// 	    dp[i] = dp[i]%1000000007;
+// 	}
+// 	cin>>x;
+// 	while(x--){
+// 	    int n;
+// 	    cin>>n;
+// 	    cout<<dp[n]<<endl;
+// 	}
+// 	return 0;
+// }
+
 
 
 // 23. Max Sum non adjacents elements of array
@@ -767,6 +859,81 @@ void totalBST(int n){
 	}
 	cout<<"Total BST : "<<T[n]<<endl;
 	return;
+}
+
+// best catalan's no. ans;
+
+// #include<iostream>
+// #include <boost/multiprecision/cpp_int.hpp>
+// using namespace boost::multiprecision;
+// using namespace std;
+// int main()
+//  {
+// 	int x;
+// 	cpp_int dp[101];
+// 	dp[0] = 1;
+// 	dp[1] = 1;
+// 	dp[2] = 2;
+// 	for(int i=3;i<101;i++){
+// 	    for(int j=0;j<i;j++){
+// 	        dp[i] += (dp[j]*dp[i-j-1]);
+	        
+// 	    }
+// 	}
+// 	cin>>x;
+// 	for(int k=0;k<x;k++){
+// 	   int n;
+// 	   cin>>n;
+// 	   cout<<dp[n]<<endl;
+// 	}
+// 	return 0;
+// }
+
+// 27. WildCard Matching 
+
+void WildCard(char s1[],char s2[],int n1,int n2){
+	bool m[n1+1][n2+1];
+	for(int i=0;i<=n1;i++){
+		for(int j=0;j<=n2;j++){
+			m[i][j] = false;
+		}
+	}
+	m[0][0] = true;
+
+	for(int i=1;i<=n1;i++){
+		for(int j=1;j<=n2;j++){
+			if(s1[i-1] == s2[j-1] || s2[j-1] =='?'){
+				m[i][j] = m[i-1][j-1];
+			}else if(s2[j-1] == '*'){
+				m[i][j] = ((m[i][j-1] == true)? true : m[i-1][j]);
+			}
+		}
+	}
+	cout<<"WildCard Matching is : "<<m[n1][n2]<<endl;
+	return;
+}
+
+// 28. Max Sum Increasing Subs
+
+void IncSubs(int a[],int n){
+    int sum[n];
+    for(int i=0;i<n;i++){
+        sum[i] = a[i];
+    }
+    for(int j=1;j<n;j++){
+        for(int i=0;i<j;i++){
+            if(a[i]<a[j]){
+                sum[j] = max(sum[j],sum[i]+a[j]);
+            }
+        }
+    }
+    int maxsum = 0;
+    for(int i=0;i<n;i++){
+        if(sum[i]>maxsum){
+            maxsum = sum[i];
+        }
+    }
+    cout<<maxsum<<endl;
 }
 
 int main(){
@@ -877,5 +1044,9 @@ int main(){
    totalpaths(input5,4,4);
 
    totalBST(5);
+
+   char s7[] = {'x','a','y','l','m','z'};
+   char s8[] = {'x','?','y','*','z'};
+   WildCard(s7,s8,6,5);
    return 0;
 }

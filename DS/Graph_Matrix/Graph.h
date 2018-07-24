@@ -6,6 +6,7 @@
 #include<limits>
 #include<set>
 #include<map>
+#include<math.h>
 #include<algorithm>
 #include "heap.h" // this is not used but can be used to get minimum edge in o(logn)
 using namespace std;
@@ -230,8 +231,10 @@ public:
          }
        }
        int cost = 0;
-       for(int i=1;i<vertices->size();i++){
+       for(int i=0;i<vertices->size();i++){
+        if(i!=src){
           cost = cost + (vertices->at(i))->at(parent[i]);
+        }
        } 
        cout<<"Minimum Cost Spanning tree : "<<cost<<endl;
        for(int i=0;i<vertices->size();i++){
@@ -273,6 +276,7 @@ void KruskalAlgo(){
 
     sort(edges->begin(),edges->end(),compare1);
     int count = 0;
+    int cost = 0;
     int v=0;
     while(v<vertices->size()-1){
       pair<pair<int,int>,int> P = edges->at(count);
@@ -285,6 +289,7 @@ void KruskalAlgo(){
       if(startParentI != endParentI){
         cout<<start<<" -- "<<end<<", W : "<<P.second<<endl;;
         parent[end] = start;
+        cost += P.second;
         v++;
       }
     }
@@ -366,6 +371,209 @@ void GraphColoring(){
 }
 
 
+int TSP(int mask,int pos,int VISITED_ALL,int cities){
+   if(mask == VISITED_ALL){
+      return (vertices->at(pos))->at(0);
+   }
+   int ans = INT_MAX;
+
+   for(int city=0;city<cities;city++){
+      if((mask&(1<<city)) == 0){
+          int newAns = (vertices->at(pos))->at(city)
+                                  + TSP(mask|(1<<city),city,VISITED_ALL,cities);
+          ans = min(ans,newAns);
+      }
+   }
+   return ans;
+}
+
 };
 
 #endif
+
+// Cycle in directed Graph
+
+// bool Cycle(std::set<int>& white,std::set<int>& grey,int i,list<int> *adj){
+//      std::set<int>::iterator it = grey.find(i);
+//      if(it != grey.end()){
+//          return true;
+//      }else{
+//          grey.insert(i);
+//      }
+//      it = white.find(i);
+//      white.erase(it);
+//      list<int> edges = adj[i];
+//      list<int>::iterator itr = edges.begin();
+//      while(itr!=edges.end()){
+//          if(grey.find(*itr) != grey.end()){
+//              return true;
+//          }else if(white.find(*itr) != white.end()){
+//              if(Cycle(white,grey,*itr,adj)){
+//                  return true;
+//              }
+//          }
+//          itr++;
+//      }
+//      it = grey.find(i);
+//      grey.erase(it);
+//      return false;
+// }
+
+// bool Graph :: isCyclic()
+// {
+//    std::set<int> white;
+//    std::set<int> grey;
+//    for(int i=0;i<V;i++){
+//        white.insert(i);
+//    }
+//    for(int i=0;i<V;i++){
+//        std::set<int>::iterator it = white.find(i);
+//        if(it!=white.end()){
+//            if(Cycle(white,grey,*it,adj)){
+//                return true;
+//            }
+//        }
+//    }
+//    return false;
+// }
+
+
+
+// Cycle in Undirected Graph
+
+// bool DFS(bool* visited,int i,int parentI,list<int> *adj){
+//     visited[i] = true;
+//     list<int> edges = adj[i];
+//     list<int>::iterator it = edges.begin();
+//     while(it!=edges.end()){
+//         if(!visited[*it]){
+//             if(DFS(visited,*it,i,adj)){
+//                 return true;
+//             }
+//         }else if(*it != parentI){
+//             return true;
+//         }
+//         it++;
+//     }
+//     return false;
+// }
+
+// bool Graph :: isCyclic()
+// {
+//    bool * visited = new bool[V];
+//    for(int i=0;i<V;i++){
+//        visited[i] = false;
+//    }
+//    for(int i=0;i<V;i++){
+//        if(!visited[i]){
+//           if(DFS(visited,i,-1,adj)){
+//               return true;
+//           }
+//        }
+//    }
+//    return false;
+// }
+
+
+// Floyd Warshall algo
+
+// #include <iostream>
+// #include <vector>
+// #include <climits>
+// using namespace std;
+
+// void FlyodWarshall(int** m,int n){
+//     for(int k=0;k<n;k++){
+//         for(int i=0;i<n;i++){
+//             for(int j=0;j<n;j++){
+//                 if(m[i][k]+m[k][j] < m[i][j]){
+//                      m[i][j] = m[i][k]+m[k][j];
+//                 }
+//             }
+//         }
+//     }
+//     return;
+// }
+
+// int main() {
+//   int x;
+//   cin>>x;
+//   for(int k=0;k<x;k++){
+//       int n;
+//       cin>>n;
+//       int** m = new int*[n];
+//       for(int i=0;i<n;i++){
+//           m[i] = new int[n];
+//       }
+//       for(int i=0;i<n;i++){
+//           for(int j=0;j<n;j++){
+//               cin>>m[i][j];
+//           }
+//       }
+//       FlyodWarshall(m,n);
+//       for(int i=0;i<n;i++){
+//           for(int j=0;j<n;j++){
+//               cout<<m[i][j]<<" ";
+//           }
+//       }
+//       cout<<endl;
+//   }
+//   return 0;
+// }
+
+
+
+//********************************//
+
+//**********  Hamiltonian cycle  ***************//
+
+
+// #include<iostream>
+// using namespace std;
+
+// bool Hamiltonian(int** t,int mask,int pos,int VIS,int cities,int start){
+//    if(mask == VIS){
+//       return true;
+//    }
+//    for(int city=0;city<cities;city++){
+//        if((mask&(1<<city)) == 0 && t[pos][city]){
+//           if(Hamiltonian(t,mask|(1<<city),city,VIS,cities,start)){
+//               return true;
+//           }
+//        }
+//    }
+//    return false;
+// }
+
+// int main(){
+//    int x;
+//    cin>>x;
+//    for(int k=0;k<x;k++){
+//       int n,m;
+//       cin>>n>>m;
+//       bool found = false;
+//       int** t = new int*[n];
+//       for(int i=0;i<n;i++){
+//           t[i] = new int[n];
+//       }
+      
+//       for(int i=0;i<m;i++){
+//          int a,b;
+//          cin>>a>>b;
+//          t[a-1][b-1] = 1;
+//          t[b-1][a-1] = 1;
+//       }
+//       int vis = (1<<n)-1;
+//       for(int i=0;i<n;i++){
+//          if(Hamiltonian(t,(1<<i),i,vis,n,i)){
+//              found = true;
+//              break;
+//          }
+//       }
+//       if(found){
+//           cout<<"1"<<endl;
+//       }else cout<<"0"<<endl;
+//    }
+//    return 0;
+// }
+

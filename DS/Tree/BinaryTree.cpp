@@ -20,6 +20,34 @@ Node<int>* takeBTInput() {
 	return root;
 }
 
+int GetMinLevel(Node<int>* root){
+    int level = 0;
+    std::queue<Node<int>*> q;
+    Node<int>* temp = NULL;
+    q.push(root);
+    q.push(temp);
+    while(!q.empty()){
+        Node<int>* node = q.front();
+        q.pop();
+        if(node == NULL){
+            q.push(temp);
+            if(q.front() == NULL){
+                break;
+            }
+            level++;
+        }else{
+        if(node->left == NULL && node->right == NULL){
+            break;
+        }if(node->left){
+            q.push(node->left);
+        }if(node->right){
+            q.push(node->right);
+        }
+        }
+    }
+    return level;
+}
+
 // it the total no. of edge from the depest leaf node to root node.
 // do not confuse it with the total no. of nodes.
 
@@ -561,6 +589,109 @@ int maxBST_In_BT(Node<int>* root){  // O(n) and O(n)
     return (j>max? j : max);
 }
 
+class Item{
+public:
+    bool isbst;
+    int size;
+    int maxi;
+    int mini;
+
+    Item(bool is,int s,int l,int r){
+        this->isbst = is;
+        this->size = s;
+        this->mini = l;
+        this->maxi = r; 
+    }
+};
+
+Item MaxBST(Node* root){
+    if(root == NULL){
+        Item I(true,0,INT_MAX,INT_MIN);
+        return Item;
+    }if(root->left == NULL && root->right == NULL){
+        Item I(true,1,root->data,root->data);
+        return I;
+    }else{
+        Item leftI = MaxBST(root->left);
+        Item rightI = MaxBST(root->right);
+        if((leftI.isbst && rightI.isbst) && root->data > leftI.maxi && 
+                       root->data < rightI.mini){
+
+            if(root->left == NULL){
+                leftI.mini = root->data;
+            }if(root->right == NULL){
+                rightI.maxi = root->data;
+            }
+            Item I(true,(1 + leftI.size + rightI.size),leftI.maxi,rightI.mini);
+            return I;
+        }else{
+            Item I(false,max(leftI.size,rightI.size),0,0);
+            return I;
+        } 
+    }
+}
+
+// Item MaxBST(Node<int>* root){
+//     if(root == NULL){
+//         Item I(true,0,INT_MAX,INT_MIN);
+//         return I;
+//     }if(root->left == NULL && root->right == NULL){
+//         Item I(true,1,root->data,root->data);
+//         return I;
+//     }else{
+//         Item IL = MaxBST(root->left);
+//         Item IR = MaxBST(root->right);
+//         if((IL.isbst && IR.isbst) && root->data > IL.maxi && root->data < IR.mini){
+            
+//             if(root->left == NULL){
+//                 IL.maxi = root->data;
+//             }if(root->right == NULL){
+//                 IR.mini = root->data;
+//             }
+//             Item I(true,1+IL.size+IR.size,IL.maxi,IR.mini);
+//             return I;
+//         }else{
+//             Item I(false,max(IL.size,IR.size),0,0);
+//             return I;
+//         } 
+//     }
+// }
+
+void ArraySum(int a[],int n,int& sum){
+    int currentsum = 0;
+    for(int i=0;i<=n;i++){
+        currentsum += a[i];
+    }
+    if(currentsum > sum){
+        sum = currentsum;
+    }
+    return;
+}
+
+void PathSum(Node<int>* root,int a[],int n,int & sum){
+    if(root->left == NULL && root->right == NULL){
+        a[n] = root->data;
+        ArraySum(a,n,sum);
+        return;
+    }
+    a[n] = root->data;
+    PathSum(root->left,a,n+1,sum);
+    PathSum(root->right,a,n+1,sum);
+    return;
+}
+
+int maxPathSum(Node<int>*root){
+    if(root == NULL){
+        return 0;
+    }
+    int a[1000];
+    int n = 0;
+    int sum = -99999;
+    PathSum(root,a,n,sum);
+    return sum;
+}
+
+
 //*****************//
 
 
@@ -623,6 +754,8 @@ int main(){
 
     //cout<<endl<<Is_BST2(root,INT_MIN,INT_MAX)<<endl;
 
-    cout<<"max bst size : "<<maxBST_In_BT(root)<<endl;
+    // cout<<"max bst size : "<<maxBST_In_BT(root)<<endl;
+
+    cout<<"level : "<<GetMinLevel(root)<<endl;
     return 0;
 }

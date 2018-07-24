@@ -392,6 +392,27 @@ void MinimizeCashFlow(){
 }
 
 
+int TSP(int dp[][4],int mask,int pos,int VISITED_ALL,int cities,int start){
+   if(mask == VISITED_ALL){
+      return (vertices->at(pos))->at(start);
+   }
+
+   if(dp[mask][pos] != -1){
+     return dp[mask][pos];
+   }
+
+   int ans = INT_MAX;
+
+   for(int city=0;city<cities;city++){
+      if((mask&(1<<city)) == 0){
+          int newAns = (vertices->at(pos))->at(city)
+                                  + TSP(dp,mask|(1<<city),city,VISITED_ALL,cities,start);
+          ans = min(ans,newAns);
+      }
+   }
+   return dp[mask][pos] = ans;
+}
+
 };
 
 #endif

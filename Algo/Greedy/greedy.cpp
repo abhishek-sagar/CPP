@@ -12,28 +12,41 @@ using namespace std;
 
 // 1. activity selection prob;
 
-static bool compare(pair<int,int> p1,pair<int,int> p2){
-	return (p1.second < p2.second);
+static bool compare(pair<pair<int,int>,int> P1,pair<pair<int,int>,int> P2){
+    pair<int,int> p1 = P1.first;
+    pair<int,int> p2 = P2.first;
+    return (p1.second < p2.second);
 }
 
-void ActivitySelc(int startTime[],int finishTime[],int n){
-     vector<pair<int,int>> v;
-     for(int i=0;i<n;i++){
-     	pair<int,int> p(startTime[i],finishTime[i]);
-     	v.push_back(p);
-     }
-     sort(v.begin(),v.end(),compare);
-     int prevend = -1;
-     for(int i=0;i<n;i++){
-     	pair<int,int> p = v.at(i);
-        if(prevend <= p.first){
-        	cout<<"{"<<p.first<<","<<p.second<<"}"<<",";
-            prevend = p.second;
+void Activity(int s[],int e[],int n){
+    vector<pair<pair<int,int>,int>> v;
+    for(int i=0;i<n;i++){
+        pair<int,int> p(s[i],e[i]);
+        pair<pair<int,int>,int> P(p,i);
+        v.push_back(P);
+    }
+    sort(v.begin(),v.end(),compare);
+    int a[n];
+    for(int i=0;i<n;i++){
+        a[i] = -1;
+    }
+    int priviousE = -1;
+    for(int i=0;i<n;i++){
+        pair<pair<int,int>,int> P = v.at(i);
+        pair<int,int> p = P.first;
+        if(p.first > priviousE){
+            a[i] = P.second+1;
+            priviousE = p.second;
         }
-     }
-     cout<<endl;
-     return;
+    }
+    for(int i=0;i<n;i++){
+        if(a[i]!=-1){
+            cout<<a[i]<<" ";
+        }
+    }
+    return;
 }
+
 
  // 2. Kruskal's algo
 
@@ -88,49 +101,130 @@ void ActivitySelc(int startTime[],int finishTime[],int n){
 
 //3. Huffman Algo
 
-void printArr(int a[],int n){
-	for(int i=0;i<n;i++){
-		cout<<a[i];
-	}
-	cout<<endl;
-	return;
-}
+// ******** This One is correct *******//
 
-void PrintCode(MinHeapNode* root,int a[],int si){
-	if(root->left){
-		a[si] = 0;
-		PrintCode(root->left,a,si+1);
-	}
-	if(root->right){
-		a[si] = 1;
-		PrintCode(root->right,a,si+1);
-	}
-	if(root->left == NULL && root->right == NULL){
-		cout<<"HuffMan Code for "<<root->c<<" is : ";
-		printArr(a,si);
-		return;
-	}
-}
+// class Node{
+// public:
+//     char c;
+//     int data;
+//     Node* left;
+//     Node* right;
+    
+//     Node(char c,int data){
+//         this->c = c;
+//         this->data = data;
+//         this->left = NULL;
+//         this->right = NULL;
+//     }
+// };
 
-MinHeapNode* Huffman(char c[],int fr[],int n){ // O(nlogn)
-	MinHeap h;
-	int i=0;
-	for(i;i<n;i++){
-		MinHeapNode* node = new MinHeapNode(c[i],fr[i]);
-		h.addElement(node);
-	}
-    while(h.Heap_size() != 1){
-        MinHeapNode* left = h.removeMin();
-        MinHeapNode* right = h.removeMin();
 
-        MinHeapNode* newNode = new MinHeapNode(char(97+i),left->freq+right->freq);
-        i++;
-        newNode->left = left;
-        newNode->right = right;
-        h.addElement(newNode);
-    }
-    return (h.removeMin());
-}
+// void Print(Node* root,string s){
+//     if(root==NULL)
+//         return;
+//     if(root->left==NULL&&root->right==NULL){
+//         cout<<s<<" ";
+//         return;
+//     }
+//     Print(root->left,s+"0");
+//     Print(root->right,s+"1");
+// }
+
+// class Compare{
+// public:
+//     int operator() (const Node* p1, const Node* p2)
+//     {
+//         return p1->data > p2->data;
+//     }
+// };
+
+// void HaffMan(priority_queue<Node*,vector<Node*>,Compare> &pq){
+//     int i=0;
+//     while(pq.size()>1){
+//         Node* leftn = pq.top();
+//         pq.pop();
+//         Node* rightn = pq.top();
+//         pq.pop();
+//         Node* newNode = new Node(char(65+i),leftn->data + rightn->data);
+//         newNode->left = leftn;
+//         newNode->right = rightn;
+//         pq.push(newNode);
+//         i++;
+//     }
+//     return;
+// }
+
+
+// int main()
+//  {
+//     int x;
+//     cin>>x;
+//     for(int k=0;k<x;k++){
+//         string s;
+//         cin>>s;
+//         int n = s.length();
+//         priority_queue<Node* , vector<Node*> , Compare> pq;
+//         for(int i=0;i<n;i++){
+//             int freq;
+//             cin>>freq;
+//             Node* newNode = new Node(s[i],freq);
+//             pq.push(newNode);
+//         }
+//         HaffMan(pq);
+//         string str = "";
+//         Print(pq.top(),str);
+//         cout<<endl;
+//     }
+//     return 0;
+// }
+
+
+//*********This One is Not Correct **********//
+
+
+// void printArr(int a[],int n){
+// 	for(int i=0;i<n;i++){
+// 		cout<<a[i];
+// 	}
+// 	cout<<endl;
+// 	return;
+// }
+
+// void PrintCode(MinHeapNode* root,int a[],int si){
+// 	if(root->left){
+// 		a[si] = 0;
+// 		PrintCode(root->left,a,si+1);
+// 	}
+// 	if(root->right){
+// 		a[si] = 1;
+// 		PrintCode(root->right,a,si+1);
+// 	}
+// 	if(root->left == NULL && root->right == NULL){
+// 		cout<<"HuffMan Code for "<<root->c<<" is : ";
+// 		printArr(a,si);
+// 		return;
+// 	}
+// }
+
+// MinHeapNode* Huffman(char c[],int fr[],int n){ // O(nlogn)
+// 	MinHeap h;
+// 	int i=0;
+// 	for(i;i<n;i++){
+// 		MinHeapNode* node = new MinHeapNode(c[i],fr[i]);
+// 		h.addElement(node);
+// 	}
+//     while(h.Heap_size() != 1){
+//         MinHeapNode* left = h.removeMin();
+//         MinHeapNode* right = h.removeMin();
+
+//         MinHeapNode* newNode = new MinHeapNode(char(97+i),left->freq+right->freq);
+//         i++;
+//         newNode->left = left;
+//         newNode->right = right;
+//         h.addElement(newNode);
+//     }
+//     return (h.removeMin());
+// }
 
 // 4. Huffman coding Efficiently if the given freq[] is sorted with Complexity : O(n)
 /* 
@@ -497,7 +591,7 @@ void ThreeStack(vector<int> v1,vector<int> v2,vector<int> v3){
 int main(){
     // int start[] = {1, 3, 0, 5, 8, 5};
     // int end[] = {2, 4, 6, 7, 9, 9};
-    // ActivitySelc(start,end,6);
+    // Activity(start,end,6);
 
     // char c[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
     // int fr[] = { 5, 9, 12, 13, 16, 45 };

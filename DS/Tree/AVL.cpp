@@ -10,16 +10,8 @@ public:
 
 	int height(AVLNode* root){
 		if(root == NULL){
-			return 0;
+			return -1;
 		}else return (root->height);
-	}
-
-	int balance(AVLNode* root){
-		if(root == NULL){
-			return 0;
-		}else{
-			return (height(root->left) - height(root->right));
-		}
 	}
     
     AVLNode* rotateright(AVLNode* y){
@@ -58,7 +50,7 @@ public:
            return root;
         }
         	root->height = 1 + max(height(root->left),height(root->right));
-            int diff = balance(root);
+            int diff =  height(root->left) - height(root->right);
             if(diff > 1 && root->left->data > data){ //Left Left case.
                 return rotateright(root);
             }if(diff > 1 && root->left->data < data){ // left right case.
